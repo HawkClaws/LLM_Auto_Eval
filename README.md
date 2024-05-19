@@ -7,7 +7,7 @@ LLMを使ってLLMを自動評価します
 
 ### インストール
 
-`pip install https://github.com/HawkClaws/LLM_Auto_Eval.git`
+`pip install git+https://github.com/HawkClaws/LLM_Auto_Eval.git`
 
 
 ### 実行する
