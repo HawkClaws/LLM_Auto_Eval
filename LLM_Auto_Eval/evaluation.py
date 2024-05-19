@@ -1,23 +1,9 @@
 import csv
 import os
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_openai import ChatOpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
+
 from tenacity import retry, stop_after_attempt, wait_fixed
 from lite_llm_json import LiteLLMJson
-
-MODEL: BaseChatModel = None
-
-# OpenAI APIの場合
-# openai_api_key = ""
-# MODEL = ChatOpenAI(
-#     api_key=openai_api_key, model_name="gpt-4-turbo-2024-04-09"
-# )
-
-# Gemini APIの場合
-os.environ["GOOGLE_API_KEY"] = "your token"
-MODEL = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
-
 
 SCORE_SCHEMA = {
     "type": "object",
@@ -73,7 +59,7 @@ def eval_by_llm(model: BaseChatModel, pred, input_text, output_text, eval_aspect
     return int(json_data["score"])
 
 
-def evaluation(input_file):
+def evaluation(input_file: str, eval_llm: BaseChatModel):
 
     output_file = os.path.join(
         os.path.dirname(input_file),
@@ -98,7 +84,7 @@ def evaluation(input_file):
             pred = row["result_output"]
             print("=============pred=============")
             print(pred)
-            score = eval_by_llm(MODEL, pred, input_text, output_text, eval_aspect)
+            score = eval_by_llm(eval_llm, pred, input_text, output_text, eval_aspect)
             print("=============score=============")
             print(score)
             row["score"] = score

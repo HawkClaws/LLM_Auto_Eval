@@ -5,17 +5,10 @@ LLMを使ってLLMを自動評価します
 
 ## 使い方
 
-### git クローンと必要なものインストール
+### インストール
 
-`git clone https://github.com/HawkClaws/LLM_Auto_Eval.git`
+`pip install https://github.com/HawkClaws/LLM_Auto_Eval.git`
 
-`pip install langchain langchain_openai langchain_google_genai tenacity LiteLLMJson`
-
-
-### トークン設定
-
-`evaluation.py`で、OpenAIあるいはGeminiのトークンを設定してください！  
-LangChainのBaseChatModelを使っているので、対応しているLLMであれば何でもOKです
 
 ### 実行する
 して、`def __call__(self, input_str: str) -> str:`の関数を作ってrunするだけ！
@@ -45,9 +38,24 @@ def llm(prompt):
     generated_text = generated_textoutputs[0]["generated_text"]
     return generated_text
 
+
+# OpenAI APIの場合
+from langchain_openai import ChatOpenAI
+openai_api_key = ""
+eval_llm = ChatOpenAI(
+    api_key=openai_api_key, model_name="gpt-4-turbo-2024-04-09"
+)
+
+# Gemini APIの場合
+from langchain_google_genai import ChatGoogleGenerativeAI
+os.environ["GOOGLE_API_KEY"] = "your token"
+eval_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
+
+
 ## LLM_Auto_Evalをインポートして、run
 from LLM_Auto_Eval.auto_eval import run
-run(llm)
+run(llm, eval_llm)
+
 ```
 
 ##
