@@ -12,7 +12,7 @@ class LLM(Protocol):
     def __call__(self, input_str: str) -> str: ...
 
 
-def run(llm: LLM, eval_llm: BaseChatModel):
+def run(llm: LLM, eval_llm: BaseChatModel) -> float:
     now = datetime.now().strftime("%Y%m%d%H%M%S").zfill(14)
     output_file = f"result_test_{now}.csv"
     fieldnames, row_datas = tasks.get_test_data()
@@ -28,4 +28,5 @@ def run(llm: LLM, eval_llm: BaseChatModel):
 
             row["result_output"] = result_output
             writer.writerow(row)
-    evaluation(output_file, eval_llm)
+    average_score = evaluation(output_file, eval_llm)
+    return average_score

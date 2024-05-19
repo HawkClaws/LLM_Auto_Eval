@@ -77,6 +77,8 @@ def evaluation(input_file: str, eval_llm: BaseChatModel):
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
 
+        total_score = 0
+        row_count = 0
         for row in reader:
             input_text = row["input"]
             output_text = row["output"]
@@ -88,5 +90,11 @@ def evaluation(input_file: str, eval_llm: BaseChatModel):
             print("=============score=============")
             print(score)
             row["score"] = score
+            total_score += score
+            row_count += 1
 
             writer.writerow(row)
+        average_score = total_score / row_count if row_count else 0
+        print("=============average score=============")
+        print(average_score)
+        return average_score
