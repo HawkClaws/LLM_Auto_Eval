@@ -32,20 +32,24 @@ def run(
         row_count = 0
         for row in row_datas:
             input_text = row["input"]
+            output_text = row["output"]
+            eval_aspect = row["eval_aspect"]
             result_output = llm(input_text)
 
             row["result_output"] = result_output
             print("=============result_output=============")
             print(result_output)
 
-            score = evaluation(input_text, eval_llm)
+            score = evaluation(
+                eval_llm, result_output, input_text, output_text, eval_aspect
+            )
 
             print("=============score=============")
             print(score)
             row["score"] = score
             total_score += score
             row_count += 1
-            
+
             evaluation_callback({"row_count": row_count, "total_score": total_score})
             writer.writerow(row)
 
