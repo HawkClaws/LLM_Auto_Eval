@@ -54,8 +54,6 @@ eval_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
 
 ## LLM_Auto_Evalをインポートして、run
 from LLM_Auto_Eval.auto_eval import run
-run(llm, eval_llm)
+average_score = run(llm, eval_llm)
 
 ```
-
-##

@@ -13,7 +13,7 @@ SCORE_SCHEMA = {
 
 
 @retry(wait=wait_fixed(30), stop=stop_after_attempt(3))
-def eval_by_llm(model: BaseChatModel, pred, input_text, output_text, eval_aspect):
+def evaluation(model: BaseChatModel, pred, input_text, output_text, eval_aspect):
     prompt = f"""あなたは採点者です。
 
     問題, 正解例, 採点基準, 回答 が与えられます。
@@ -59,42 +59,42 @@ def eval_by_llm(model: BaseChatModel, pred, input_text, output_text, eval_aspect
     return int(json_data["score"])
 
 
-def evaluation(input_file: str, eval_llm: BaseChatModel):
+# def evaluation(input_file: str, eval_llm: BaseChatModel):
 
-    output_file = os.path.join(
-        os.path.dirname(input_file),
-        "evaluated_"
-        + os.path.basename(os.path.splitext(input_file)[0])
-        + os.path.splitext(input_file)[1],
-    )
+#     output_file = os.path.join(
+#         os.path.dirname(input_file),
+#         "evaluated_"
+#         + os.path.basename(os.path.splitext(input_file)[0])
+#         + os.path.splitext(input_file)[1],
+#     )
 
-    with open(input_file, "r", encoding="utf-8") as csvfile, open(
-        output_file, "w", newline="", encoding="utf-8"
-    ) as outfile:
-        reader = csv.DictReader(csvfile)
-        fieldnames = reader.fieldnames + ["score"]
+#     with open(input_file, "r", encoding="utf-8") as csvfile, open(
+#         output_file, "w", newline="", encoding="utf-8"
+#     ) as outfile:
+#         reader = csv.DictReader(csvfile)
+#         fieldnames = reader.fieldnames + ["score"]
 
-        writer = csv.DictWriter(outfile, fieldnames=fieldnames)
-        writer.writeheader()
+#         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+#         writer.writeheader()
 
-        total_score = 0
-        row_count = 0
-        for row in reader:
-            input_text = row["input"]
-            output_text = row["output"]
-            eval_aspect = row["eval_aspect"]
-            pred = row["result_output"]
-            print("=============pred=============")
-            print(pred)
-            score = eval_by_llm(eval_llm, pred, input_text, output_text, eval_aspect)
-            print("=============score=============")
-            print(score)
-            row["score"] = score
-            total_score += score
-            row_count += 1
+#         total_score = 0
+#         row_count = 0
+#         for row in reader:
+#             input_text = row["input"]
+#             output_text = row["output"]
+#             eval_aspect = row["eval_aspect"]
+#             pred = row["result_output"]
+#             print("=============pred=============")
+#             print(pred)
+#             score = eval_by_llm(eval_llm, pred, input_text, output_text, eval_aspect)
+#             print("=============score=============")
+#             print(score)
+#             row["score"] = score
+#             total_score += score
+#             row_count += 1
 
-            writer.writerow(row)
-        average_score = total_score / row_count if row_count else 0
-        print("=============average score=============")
-        print(average_score)
-        return average_score
+#             writer.writerow(row)
+#         average_score = total_score / row_count if row_count else 0
+#         print("=============average score=============")
+#         print(average_score)
+#         return average_score

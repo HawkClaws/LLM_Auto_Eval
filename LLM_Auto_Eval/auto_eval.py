@@ -12,21 +12,44 @@ class LLM(Protocol):
     def __call__(self, input_str: str) -> str: ...
 
 
-def run(llm: LLM, eval_llm: BaseChatModel) -> float:
+class EvaluationCallback(Protocol):
+    def __call__(self, result: dict) -> None: ...
+
+
+def run(
+    llm: LLM, eval_llm: BaseChatModel, evaluation_callback: EvaluationCallback = None
+) -> float:
     now = datetime.now().strftime("%Y%m%d%H%M%S").zfill(14)
     output_file = f"result_test_{now}.csv"
     fieldnames, row_datas = tasks.get_test_data()
 
     with open(output_file, "w", newline="", encoding="utf-8") as outfile:
-        fieldnames = fieldnames + ["result_output"]
+        fieldnames = fieldnames + ["result_output", "score"]
 
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
+        total_score = 0
+        row_count = 0
         for row in row_datas:
             input_text = row["input"]
             result_output = llm(input_text)
 
             row["result_output"] = result_output
+            print("=============result_output=============")
+            print(result_output)
+
+            score = evaluation(input_text, eval_llm)
+
+            print("=============score=============")
+            print(score)
+            row["score"] = score
+            total_score += score
+            row_count += 1
+            
+            evaluation_callback({"row_count": row_count, "total_score": total_score})
             writer.writerow(row)
-    average_score = evaluation(output_file, eval_llm)
-    return average_score
+
+        average_score = total_score / row_count if row_count else 0
+        print("=============average score=============")
+        print(average_score)
+        return average_score
