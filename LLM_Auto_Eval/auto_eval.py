@@ -32,6 +32,9 @@ def run(
         row_count = 0
         for row in row_datas:
             input_text = row["input"]
+            print("=============input_text=============")
+            print(input_text)
+            
             output_text = row["output"]
             eval_aspect = row["eval_aspect"]
             result_output = llm(input_text)
