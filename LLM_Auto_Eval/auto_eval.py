@@ -53,7 +53,8 @@ def run(
             total_score += score
             row_count += 1
 
-            evaluation_callback({"row_count": row_count, "total_score": total_score})
+            if evaluation_callback:
+                evaluation_callback({"row_count": row_count, "total_score": total_score})
             writer.writerow(row)
 
         average_score = total_score / row_count if row_count else 0
